@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Music gift</title>
+</head>
+<body>
+<form action="#" th:action="@{/create-player}" th:object="${playerInformation}" method="post">
+    <input th:field="*{name}" type="text" placeholder="Player name"/>
+    <input type="submit" value="Create"/>
+</form>
+</body>
+</html>
