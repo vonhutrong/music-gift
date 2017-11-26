@@ -1,46 +1,65 @@
 var stompClient = null;
 
-function setConnected(connected) {
-    $("#connect").prop("disabled", connected);
-    $("#disconnect").prop("disabled", !connected);
-    if (connected) {
-        $("#conversation").show();
-    }
-    else {
-        $("#conversation").hide();
-    }
-    $("#greetings").html("");
-}
-
 function connect() {
-    var socket = new SockJS('/gs-guide-websocket');
+    var socket = new SockJS("/gs-guide-websocket");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
-        setConnected(true);
-        console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
+        stompClient.subscribe("/topic/public", function (command) {
+        	console.info("received url: " + JSON.parse(command.body).argument);
+            addUrlToTheList(JSON.parse(command.body).argument);
         });
     });
 }
 
-function disconnect() {
-    if (stompClient !== null) {
-        stompClient.disconnect();
-    }
-    setConnected(false);
-    console.log("Disconnected");
+function addUrlToTheList(url) {
+	if (!isExisted("list-url")) {
+		$("#play-list").append("<ul id='list-url'></ul>");
+	}
+	$("#list-url").append("<li>" + url + "</li>");
+	playUrl(url);
 }
 
-function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'name': $("#name").val()}));
+function isExisted(elementId) {
+	return $("#" + elementId).length != 0;
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
+function addUrl() {
+	var nickname = $("#nickname").val();
+	var url = $("#music-url").val();
+
+	var command = {
+		sender : nickname,
+		commandType : "ADD_URL",
+		argument : url
+	};
+
+	stompClient.send(
+			"/app/add-url",
+			{},
+			JSON.stringify(command));
 }
+
+function playUrl(url) {
+	if (wantToPlayStatusValue) {
+		$("#player").attr("src", url);
+	}
+}
+
+var wantToPlayStatusValue = false;
 
 $(function () {
+	connect();
+	$("#add-music-url").click(addUrl);
+
+	$('#want-to-play').bootstrapToggle();
+	$('#want-to-play').change(function() {
+		wantToPlayStatusValue = $(this).prop('checked');
+	});
+
+	if (listUrl.length > 0) {
+		playUrl(url);
+	}
+
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
