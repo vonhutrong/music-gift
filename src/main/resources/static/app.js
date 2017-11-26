@@ -51,19 +51,7 @@ $(function () {
 	connect();
 	$("#add-music-url").click(addUrl);
 
-	$('#want-to-play').bootstrapToggle();
 	$('#want-to-play').change(function() {
-		wantToPlayStatusValue = $(this).prop('checked');
+		wantToPlayStatusValue = $('#want-to-play').is(":checked");
 	});
-
-	if (listUrl.length > 0) {
-		playUrl(url);
-	}
-
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
 });
