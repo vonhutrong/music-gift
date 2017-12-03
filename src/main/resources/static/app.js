@@ -1,7 +1,7 @@
 var stompClient = null;
 
 function connect() {
-    var socket = new SockJS("/gs-guide-websocket");
+	var socket = new SockJS(getBaseUrl() + "/gs-guide-websocket");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         stompClient.subscribe("/topic/public", function (command) {
@@ -9,6 +9,12 @@ function connect() {
             addUrlToTheList(JSON.parse(command.body).argument);
         });
     });
+}
+
+function getBaseUrl() {
+	var url = window.location;
+	var baseUrl = url.protocol + "//" + url.host + "/" + url.pathname.split('/')[1];
+	return baseUrl;
 }
 
 function addUrlToTheList(url) {
